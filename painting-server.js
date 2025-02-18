@@ -7,82 +7,337 @@ const supabase = supa.createClient(supaUrl, supaAnonKey);
 
 /* =========== ERAS API =========== */
 app.get('/api/eras', async (req, res) => {
-    const {data, error} = await supabase
-    .from('eras')
-    .select();
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('eras')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 /* =========== GALLERIES API =========== */
 app.get('/api/galleries', async (req, res) => {
-    const {data, error} = await supabase
-    .from('galleries')
-    .select();
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('galleries')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 app.get('/api/galleries/:ref', async (req, res) => {
-    const {data, error} = await supabase
-    .from('galleries')
-    .select()
-    .eq('galleryId', req.params.ref);
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('galleries')
+        .select()
+        .eq('galleryId', req.params.ref);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 app.get('/api/galleries/country/:substring', async (req, res) => {
-    const {data, error} = await supabase
-    .from('galleries')
-    .select()
-    .ilike('galleryCountry', `${req.params.substring}%`);
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('galleries')
+        .select()
+        .ilike('galleryCountry', `${req.params.substring}%`);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 /* =========== ARTISTS API =========== */
 app.get('/api/artists', async (req, res) => {
-    const {data, error} = await supabase
-    .from('artists')
-    .select();
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('artists')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/artists/:ref', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('artists')
+        .select()
+        .eq('artistId', req.params.ref);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/artists/search/:substring', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('artists')
+        .select()
+        .ilike('lastName', `${req.params.substring}%`);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/artists/country/:substring', async (req, res) => {
+    try {    
+
+        const {data, error} = await supabase
+        .from('artists')
+        .select()
+        .ilike('nationality', `${req.params.substring}%`);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 /* =========== PAINTINGS API =========== */
 app.get('/api/paintings', async (req, res) => {
-    const {data, error} = await supabase
-    .from('paintings')
-    .select();
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
-app.get('/api/artists/:ref', async (req, res) => {
-    const {data, error} = await supabase
-    .from('artists')
-    .select()
-    .eq('artistId', req.params.ref);
-    res.send(data);
+app.get('/api/paintings/sort/:title|year', async (req, res) => { /* DO THIS ONE WHEN YOU UNDERSTAND HOW*/
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+}); 
+
+app.get('/api/paintings/:ref', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .eq('paintingId', req.params.ref);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
-app.get('/api/artists/search/:substring', async (req, res) => {
-    const {data, error} = await supabase
-    .from('artists')
-    .select()
-    .ilike('lastName', `${req.params.substring}%`);
-    res.send(data);
+app.get('/api/paintings/search/:substring', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .ilike('title', `%${req.params.substring}%`);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
-app.get('/api/artists/country/:substring', async (req, res) => {
-    const {data, error} = await supabase
-    .from('artists')
-    .select()
-    .ilike('nationality', `${req.params.substring}%`);
-    res.send(data);
+app.get('/api/paintings/years/:start/:end', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .gte("yearOfWork", req.params.start)
+        .lte("yearOfWork", req.params.end)
+        .order("yearOfWork",{ascending: true});
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/paintings/galleries/:ref', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .eq("galleryId", req.params.ref)
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+    }
+});
+
+app.get('/api/paintings/artist/:ref', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .eq("artistId", req.params.ref)
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+    }
+});
+
+app.get('/api/paintings/artist/country/:ref', async (req, res) => {
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select(` 
+            *, 
+            artists!inner(artistId, nationality, firstName, lastName)
+        `)
+        .ilike("artists.nationality", `${req.params.ref}%`);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        return res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 /* =========== GENRES API =========== */
 app.get('/api/genres', async (req, res) => {
-    const {data, error} = await supabase
-    .from('genres')
-    .select();
-    res.send(data);
+    try {    
+        const {data, error} = await supabase
+        .from('genres')
+        .select();
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }   
+});
+
+app.get('/api/genres/:ref', async (req, res) => {
+    try {    
+
+        const {data, error} = await supabase
+        .from('genres')
+        .select()
+        .eq("genreId", req.params.ref);
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? --- STILL NOW WOKRING */
+    try {    
+        const {data, error} = await supabase
+            .from('paintingGenres')
+            .select(`
+                genres(genreName),
+                paintings!inner(paintingId, title)
+            `)
+            .eq("paintingId", req.params.ref)
+            .order("genreId", {ascending: true});
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        return res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/paintings/genre/:ref', async (req, res) => { /* also not working? */
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .eq("genreId", req.params.ref)
+        .order("genreName", {ascending: true});
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/paintings/era/:ref', async (req, res) => { /* also not working? */
+    try {    
+        const {data, error} = await supabase
+        .from('paintings')
+        .select()
+        .eq("genreId", req.params.ref)
+        .order("genreName", {ascending: true});
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
 });
 
 let hostURL = "http://localhost:8080"
