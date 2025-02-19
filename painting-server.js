@@ -9,8 +9,13 @@ const supabase = supa.createClient(supaUrl, supaAnonKey);
 app.get('/api/eras', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('eras')
-        .select();
+            .from('eras')
+            .select();
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -24,8 +29,13 @@ app.get('/api/eras', async (req, res) => {
 app.get('/api/galleries', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('galleries')
-        .select();
+            .from('galleries')
+            .select();
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -38,9 +48,14 @@ app.get('/api/galleries', async (req, res) => {
 app.get('/api/galleries/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('galleries')
-        .select()
-        .eq('galleryId', req.params.ref);
+            .from('galleries')
+            .select()
+            .eq('galleryId', req.params.ref )
+        
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -53,9 +68,14 @@ app.get('/api/galleries/:ref', async (req, res) => {
 app.get('/api/galleries/country/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('galleries')
-        .select()
-        .ilike('galleryCountry', `${req.params.substring}%`);
+            .from('galleries')
+            .select()
+            .ilike('galleryCountry', `${req.params.substring}%`);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -69,8 +89,13 @@ app.get('/api/galleries/country/:substring', async (req, res) => {
 app.get('/api/artists', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('artists')
-        .select();
+            .from('artists')
+            .select();
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -83,9 +108,14 @@ app.get('/api/artists', async (req, res) => {
 app.get('/api/artists/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('artists')
-        .select()
-        .eq('artistId', req.params.ref);
+            .from('artists')
+            .select()
+            .eq('artistId', req.params.ref);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -98,9 +128,14 @@ app.get('/api/artists/:ref', async (req, res) => {
 app.get('/api/artists/search/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('artists')
-        .select()
-        .ilike('lastName', `${req.params.substring}%`);
+            .from('artists')
+            .select()
+            .ilike('lastName', `${req.params.substring}%`);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -114,9 +149,14 @@ app.get('/api/artists/country/:substring', async (req, res) => {
     try {    
 
         const {data, error} = await supabase
-        .from('artists')
-        .select()
-        .ilike('nationality', `${req.params.substring}%`);
+            .from('artists')
+            .select()
+            .ilike('nationality', `${req.params.substring}%`);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -130,8 +170,13 @@ app.get('/api/artists/country/:substring', async (req, res) => {
 app.get('/api/paintings', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select();
+            .from('paintings')
+            .select();
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -141,11 +186,27 @@ app.get('/api/paintings', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/sort/:title|year', async (req, res) => { /* DO THIS ONE WHEN YOU UNDERSTAND HOW*/
+app.get('/api/paintings/sort/:sortField', async (req, res) => { 
     try {    
+        let { sortField} = req.params;
+
+        if (sortField === 'year') {
+            sortField = 'yearOfWork';
+        }
+
+        if (!['title', 'yearOfWork'].includes(sortField)) {
+            return res.status(400).json({ error: "Invalid sort field. Use 'title' or 'yearOfWork'." });
+        }
+
         const {data, error} = await supabase
-        .from('paintings')
-        .select();
+                .from('paintings')
+                .select()
+                .order(sortField, {ascending: true})
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -158,9 +219,14 @@ app.get('/api/paintings/sort/:title|year', async (req, res) => { /* DO THIS ONE 
 app.get('/api/paintings/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .eq('paintingId', req.params.ref);
+            .from('paintings')
+            .select()
+            .eq('paintingId', req.params.ref);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -173,9 +239,14 @@ app.get('/api/paintings/:ref', async (req, res) => {
 app.get('/api/paintings/search/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .ilike('title', `%${req.params.substring}%`);
+            .from('paintings')
+            .select()
+            .ilike('title', `%${req.params.substring}%`);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -188,11 +259,16 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
 app.get('/api/paintings/years/:start/:end', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .gte("yearOfWork", req.params.start)
-        .lte("yearOfWork", req.params.end)
-        .order("yearOfWork",{ascending: true});
+            .from('paintings')
+            .select()
+            .gte("yearOfWork", req.params.start)
+            .lte("yearOfWork", req.params.end)
+            .order("yearOfWork",{ascending: true});
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -205,9 +281,14 @@ app.get('/api/paintings/years/:start/:end', async (req, res) => {
 app.get('/api/paintings/galleries/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .eq("galleryId", req.params.ref)
+            .from('paintings')
+            .select()
+            .eq("galleryId", req.params.ref);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -219,9 +300,14 @@ app.get('/api/paintings/galleries/:ref', async (req, res) => {
 app.get('/api/paintings/artist/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .eq("artistId", req.params.ref)
+            .from('paintings')
+            .select()
+            .eq("artistId", req.params.ref)
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -233,12 +319,12 @@ app.get('/api/paintings/artist/:ref', async (req, res) => {
 app.get('/api/paintings/artist/country/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select(` 
-            *, 
-            artists!inner(artistId, nationality, firstName, lastName)
-        `)
-        .ilike("artists.nationality", `${req.params.ref}%`);
+            .from('paintings')
+            .select(` 
+                *, 
+                artists!inner(artistId, nationality, firstName, lastName)
+            `)
+            .ilike("artists.nationality", `${req.params.ref}%`);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -257,8 +343,13 @@ app.get('/api/paintings/artist/country/:ref', async (req, res) => {
 app.get('/api/genres', async (req, res) => {
     try {    
         const {data, error} = await supabase
-        .from('genres')
-        .select();
+            .from('genres')
+            .select();
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -272,9 +363,14 @@ app.get('/api/genres/:ref', async (req, res) => {
     try {    
 
         const {data, error} = await supabase
-        .from('genres')
-        .select()
-        .eq("genreId", req.params.ref);
+            .from('genres')
+            .select()
+            .eq("genreId", req.params.ref);
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -284,7 +380,7 @@ app.get('/api/genres/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? --- STILL NOW WOKRING */
+app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? --- STILL NOT WOKRING CURRENTLY */
     try {    
         const {data, error} = await supabase
             .from('paintingGenres')
@@ -311,10 +407,19 @@ app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? 
 app.get('/api/paintings/genre/:ref', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .eq("genreId", req.params.ref)
-        .order("genreName", {ascending: true});
+            .from('paintings')
+            .select(`
+                paintingId,
+                title,
+                yearOfWork
+            `)
+            .eq("genreId", req.params.ref)
+            .order("yearOfWork", {ascending: true});
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -327,10 +432,80 @@ app.get('/api/paintings/genre/:ref', async (req, res) => { /* also not working? 
 app.get('/api/paintings/era/:ref', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
-        .from('paintings')
-        .select()
-        .eq("genreId", req.params.ref)
-        .order("genreName", {ascending: true});
+            .from('paintings')
+            .select(`
+                paintingId,
+                title,
+                yearOfWork
+            `)
+            .eq("genreId", req.params.ref)
+            .order("yearOfWork", {ascending: true});
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+/* =========== COUNTS API =========== */
+app.get('/api/counts/:genres', async (req, res) => { /* also not working? */
+    try {    
+        const {data, error} = await supabase
+            .from('')
+            .select()
+            .eq("genreId", req.params.ref)
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/counts/:artists', async (req, res) => { /* also not working? */
+    try {    
+        const {data, error} = await supabase
+            .from('')
+            .select()
+            .eq("genreId", req.params.ref)
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.send(data);
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: "internal server error" }); 
+
+    }
+});
+
+app.get('/api/counts/topgenres/:ref', async (req, res) => { /* also not working? */
+    try {    
+        const {data, error} = await supabase
+            .from('')
+            .select()
+            .eq("genreId", req.params.ref)
+
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
         res.send(data);
     }
     catch (error) {
