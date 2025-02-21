@@ -1,9 +1,49 @@
+/* TO DO 
+
+Complete the readme.md, with routes
+Set up modules for private route access
+review each query for correct data aggregation
+create & run server in render.com
+add start and end date error checking with custom message
+
+take out all foreign keys from the painting routes
+
+
+ASK HIM 
+
+ASK RANDY ABOUT THE ERASID THING FOR THE 4TH LAST ROUTE*****
+
+
+
+*/
+
+
 const express = require('express');
 const supa = require('@supabase/supabase-js');
 const app = express();
 const supaUrl = 'https://jvoirkgcqrriymwwoigq.supabase.co';
 const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2b2lya2djcXJyaXltd3dvaWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk3MzAzODksImV4cCI6MjA1NTMwNjM4OX0.Ww69yn3DZ03G2xmHOQR_FgtQLo8ZgLhpbkjCpXdmw4s';
 const supabase = supa.createClient(supaUrl, supaAnonKey);
+
+const paintingFields = `paintingId,
+                        imageFileName,
+                        title,
+                        shapeId,
+                        museumLink,
+                        accessionNumber,
+                        copyrightText,
+                        description,
+                        excerpt,
+                        yearOfWork,
+                        width,
+                        height,
+                        medium,
+                        cost,
+                        MSRP,
+                        googleLink,
+                        googleDescription,
+                        wikiLink,
+                        jsonAnnotations`;
 
 /* =========== ERAS API =========== */
 app.get('/api/eras', async (req, res) => {
@@ -171,7 +211,8 @@ app.get('/api/paintings', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select();
+            .select(paintingFields)
+            .order("title", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -200,7 +241,7 @@ app.get('/api/paintings/sort/:sortField', async (req, res) => {
 
         const {data, error} = await supabase
                 .from('paintings')
-                .select()
+                .select(paintingFields)
                 .order(sortField, {ascending: true})
 
         if (error) {
@@ -220,7 +261,7 @@ app.get('/api/paintings/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select()
+            .select(paintingFields)
             .eq('paintingId', req.params.ref);
 
         if (error) {
@@ -240,8 +281,9 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select()
-            .ilike('title', `%${req.params.substring}%`);
+            .select(paintingFields)
+            .ilike('title', `%${req.params.substring}%`)
+            .order("title", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -258,9 +300,11 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
 
 app.get('/api/paintings/years/:start/:end', async (req, res) => {
     try {    
+
+        if (req.params.start > req.params.end) return res.status(500).json( {error: "The inputted end date occurs before the start date"})
         const {data, error} = await supabase
             .from('paintings')
-            .select()
+            .select(paintingFields)
             .gte("yearOfWork", req.params.start)
             .lte("yearOfWork", req.params.end)
             .order("yearOfWork",{ascending: true});
@@ -282,8 +326,10 @@ app.get('/api/paintings/galleries/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select()
-            .eq("galleryId", req.params.ref);
+            .select(paintingFields)
+            .eq("galleryId", req.params.ref)
+            .order("title", {ascending: true});
+
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -301,8 +347,9 @@ app.get('/api/paintings/artist/:ref', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select()
+            .select(`paintingFields`)
             .eq("artistId", req.params.ref)
+            .order("title", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -321,10 +368,11 @@ app.get('/api/paintings/artist/country/:ref', async (req, res) => {
         const {data, error} = await supabase
             .from('paintings')
             .select(` 
-                *, 
-                artists!inner(artistId, nationality, firstName, lastName)
+                ${paintingFields},
+                artists!inner(artistId, nationality)
             `)
-            .ilike("artists.nationality", `${req.params.ref}%`);
+            .ilike("artists.nationality", `${req.params.ref}%`)
+            .order("title", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
