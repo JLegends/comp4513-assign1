@@ -380,16 +380,15 @@ app.get('/api/genres/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? --- STILL NOT WOKRING CURRENTLY */
+app.get('/api/genres/painting/:ref', async (req, res) => { 
     try {    
         const {data, error} = await supabase
-            .from('paintingGenres')
+            .from('paintinggenres')
             .select(`
-                genres(genreName),
-                paintings!inner(paintingId, title)
+                genres(genreName)
             `)
             .eq("paintingId", req.params.ref)
-            .order("genreId", {ascending: true});
+            .order("genres(genreName)", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -404,17 +403,15 @@ app.get('/api/genres/painting/:ref', async (req, res) => { /* also not working? 
     }
 });
 
-app.get('/api/paintings/genre/:ref', async (req, res) => { /* also not working? */
+app.get('/api/paintings/genre/:ref', async (req, res) => { 
     try {    
         const {data, error} = await supabase
-            .from('paintings')
+            .from('paintinggenres')
             .select(`
-                paintingId,
-                title,
-                yearOfWork
+                paintings (paintingId, title, yearOfWork)
             `)
             .eq("genreId", req.params.ref)
-            .order("yearOfWork", {ascending: true});
+            .order("paintings(yearOfWork)", {ascending: true});
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -429,17 +426,16 @@ app.get('/api/paintings/genre/:ref', async (req, res) => { /* also not working? 
     }
 });
 
-app.get('/api/paintings/era/:ref', async (req, res) => { /* also not working? */
+app.get('/api/paintings/era/:ref', async (req, res) => { /* This works now, but talk to Randy about needing to select eraId for it to work?? */
     try {    
         const {data, error} = await supabase
-            .from('paintings')
+            .from('paintinggenres')
             .select(`
-                paintingId,
-                title,
-                yearOfWork
+                paintings(paintingId, title, yearOfWork), genres!inner (eraId)
             `)
-            .eq("genreId", req.params.ref)
-            .order("yearOfWork", {ascending: true});
+            .eq("genres.eraId", req.params.ref)
+            .order("paintings(yearOfWork)", { ascending: true});
+
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -455,18 +451,26 @@ app.get('/api/paintings/era/:ref', async (req, res) => { /* also not working? */
 });
 
 /* =========== COUNTS API =========== */
-app.get('/api/counts/:genres', async (req, res) => { /* also not working? */
+app.get('/api/counts/genres', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
-            .from('')
-            .select()
-            .eq("genreId", req.params.ref)
+            .from('genres')
+            .select(`
+                genreName, paintinggenres(genreId)
+            `)
+
 
         if (error) {
             return res.status(500).json({ error: error.message });
         }
 
-        res.send(data);
+        const genreCounts = data.map(genre => ({
+            genreName: genre.genreName,
+            paintingCount: genre.paintinggenres.length
+        }));
+
+        genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
+        res.json(genreCounts);
     }
     catch (error) {
         console.log(error);
@@ -475,18 +479,25 @@ app.get('/api/counts/:genres', async (req, res) => { /* also not working? */
     }
 });
 
-app.get('/api/counts/:artists', async (req, res) => { /* also not working? */
+app.get('/api/counts/artists', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
-            .from('')
-            .select()
-            .eq("genreId", req.params.ref)
+            .from('artists')
+            .select(`
+                firstName, lastName, paintings(paintingId)
+            `);
 
         if (error) {
             return res.status(500).json({ error: error.message });
         }
 
-        res.send(data);
+        const artistCounts = data.map(artist => ({
+            artistName: `${artist.firstName} ${artist.lastName}` ,
+            paintingCount: artist.paintings.length
+        }));
+
+        artistCounts.sort((a,b) => b.paintingCount - a.paintingCount);
+        res.json(artistCounts);
     }
     catch (error) {
         console.log(error);
@@ -498,15 +509,24 @@ app.get('/api/counts/:artists', async (req, res) => { /* also not working? */
 app.get('/api/counts/topgenres/:ref', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
-            .from('')
-            .select()
-            .eq("genreId", req.params.ref)
+            .from('genres')
+            .select(`
+                genreName, paintinggenres(genreId)
+            `)
 
         if (error) {
             return res.status(500).json({ error: error.message });
         }
 
-        res.send(data);
+        const genreCounts = data.map(genre => ({
+            genreName: genre.genreName,
+            paintingCount: genre.paintinggenres.length
+        }));
+
+        genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
+        const topGenres = genreCounts.filter(a => a.paintingCount > req.params.ref); /* filters only for genres with painting count greater than ref number */
+
+        res.json(topGenres);
     }
     catch (error) {
         console.log(error);
@@ -515,9 +535,9 @@ app.get('/api/counts/topgenres/:ref', async (req, res) => { /* also not working?
     }
 });
 
-let hostURL = "http://localhost:8080"
-app.listen(8080, () => {
-    console.log('listening on port 8080');
+let hostURL = "http://localhost:8070"
+app.listen(8070, () => {
+    console.log('listening on port 8070');
     console.log(hostURL + '/api/eras');
     console.log(hostURL + '/api/galleries');
     console.log(hostURL + '/api/galleries/30');
