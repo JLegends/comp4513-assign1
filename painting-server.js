@@ -34,6 +34,10 @@ app.get('/api/eras', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No eras found.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -52,6 +56,10 @@ app.get('/api/galleries', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No galleries found.`})
         }
 
         res.send(data);
@@ -74,6 +82,10 @@ app.get('/api/galleries/:id', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `Gallery with ID ${req.params.id} not found.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -92,6 +104,10 @@ app.get('/api/galleries/country/:substring', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No galleries found in the countries starting with ${req.params.substring}.`})
         }
 
         res.send(data);
@@ -114,6 +130,10 @@ app.get('/api/artists', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No artists found.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -134,6 +154,10 @@ app.get('/api/artists/:id', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `Artist with ID ${req.params.id} not found.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -152,6 +176,10 @@ app.get('/api/artists/search/:substring', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No artists found with the last name starting with ${req.params.substring}.`})
         }
 
         res.send(data);
@@ -175,6 +203,10 @@ app.get('/api/artists/country/:substring', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No artists found with from countries starting with ${req.params.substring}.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -186,7 +218,7 @@ app.get('/api/artists/country/:substring', async (req, res) => {
 
 /* =========== PAINTINGS API =========== */
 
-/* CONTAINS ALL FIELDS NOT INCLUDING THE FOREIGN KEYS */
+/* Contains all painting fields not including foreign keys */
 const paintingFields = `paintingId,          
                         imageFileName,
                         title,
@@ -218,6 +250,10 @@ app.get('/api/paintings', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -240,12 +276,16 @@ app.get('/api/paintings/sort/:field', async (req, res) => {
         }
 
         const {data, error} = await supabase
-                .from('paintings')
-                .select(paintingFields)
-                .order(field, {ascending: true})
+            .from('paintings')
+            .select(paintingFields)
+            .order(field, {ascending: true})
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `Invalid sort field. Use either 'title' or 'yearOfWork'.`})
         }
 
         res.send(data);
@@ -266,6 +306,10 @@ app.get('/api/paintings/:id', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `Painting with ID ${req.params.id} not found.`})
         }
 
         res.send(data);
@@ -289,6 +333,10 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found containing ${req.params.substring} in the title.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -301,7 +349,10 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
 app.get('/api/paintings/years/:start/:end', async (req, res) => {
     try {    
 
-        if (req.params.start > req.params.end) return res.status(500).json( {error: "The inputted end date occurs before the start date"})
+        if (req.params.start > req.params.end) {
+            return res.status(500).json( {error: "Invalid Range: The start year must be before or equal to the end year."});
+        }
+
         const {data, error} = await supabase
             .from('paintings')
             .select(paintingFields)
@@ -313,12 +364,15 @@ app.get('/api/paintings/years/:start/:end', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found between ${req.params.start} and ${req.params.end}`});
+        }
+
         res.send(data);
     }
     catch (error) {
         console.log(error);
         return res.status(500).json({ error: "internal server error" }); 
-
     }
 });
 
@@ -333,6 +387,10 @@ app.get('/api/paintings/galleries/:id', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found in gallery with ID ${req.params.id}.`})
         }
 
         res.send(data);
@@ -353,6 +411,10 @@ app.get('/api/paintings/artist/:id', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found for artist with ID ${req.params.id}.`})
         }
 
         res.send(data);
@@ -378,6 +440,10 @@ app.get('/api/paintings/artist/country/:substring', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found by artists from countries starting with ${req.params.substring}.`})
+        }
+
         return res.send(data);
     }
     catch (error) {
@@ -399,6 +465,10 @@ app.get('/api/genres', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No genres found`})
         }
 
         res.send(data);
@@ -425,6 +495,10 @@ app.get('/api/genres/:id', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `Genre with ID ${req.params.id} not found.`});
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -446,6 +520,10 @@ app.get('/api/genres/painting/:id', async (req, res) => {
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No genres found for painting with ID ${req.params.id}.`});
         }
 
         return res.send(data);
@@ -471,6 +549,10 @@ app.get('/api/paintings/genre/:id', async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found for genre with ID ${req.params.id}.`})
+        }
+
         res.send(data);
     }
     catch (error) {
@@ -493,6 +575,10 @@ app.get('/api/paintings/era/:id', async (req, res) => { /* This works now, but t
 
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No paintings found for era with ID ${req.params.id}.`})
         }
 
         res.send(data);
@@ -524,6 +610,11 @@ app.get('/api/counts/genres', async (req, res) => { /* also not working? */
         }));
 
         genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
+
+        if (!genreCounts || genreCounts.length === 0) {
+            return res.status(404).json({error: `No genres found with paintings.`})
+        }
+
         res.json(genreCounts);
     }
     catch (error) {
@@ -549,6 +640,10 @@ app.get('/api/counts/artists', async (req, res) => { /* also not working? */
             artistName: `${artist.firstName} ${artist.lastName}` ,
             paintingCount: artist.paintings.length
         }));
+
+        if (!artistCounts || artistCounts.length === 0) {
+            return res.status(404).json({error: `No artists found with paintings.`})
+        }
 
         artistCounts.sort((a,b) => b.paintingCount - a.paintingCount);
         res.json(artistCounts);
@@ -579,6 +674,10 @@ app.get('/api/counts/topgenres/:threshold', async (req, res) => { /* also not wo
 
         genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
         const topGenres = genreCounts.filter(a => a.paintingCount > req.params.threshold); /* filters only for genres with painting count greater than threshold */
+
+        if (!topGenres || topGenres.length === 0) {
+            return res.status(404).json({error: `No genres found with more than ${req.params.threshold} paintings.`})
+        }
 
         res.json(topGenres);
     }
