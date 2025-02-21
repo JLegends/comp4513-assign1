@@ -1,16 +1,7 @@
 /* TO DO 
 
-Complete the readme.md, with routes
 Set up modules for private route access
-review each query for correct data aggregation
-write a note for the basic web service route (just the url.com/apis)
  
-all eras apis need to contain all data from eras table
-
-take out all foreign keys from the painting routes
-
-ASK HIM 
-
 ASK RANDY ABOUT THE ERASID THING FOR THE 4TH LAST ROUTE*****
 
 */
