@@ -1,20 +1,18 @@
-/* TO DO 
-
-Set up modules for private route access
- 
-ASK RANDY ABOUT THE ERASID THING FOR THE 4TH LAST ROUTE*****
-
-*/
-
+// assignment: COMP 4513 Assignment 1
+// file: painting-server.js
+// Express server for fetching data about eras, galleries, artists, paintings, and genres.
+// Uses Supabase as the database.
 
 const express = require('express');
 const supa = require('@supabase/supabase-js');
 const app = express();
-const supaUrl = 'https://jvoirkgcqrriymwwoigq.supabase.co';
-const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2b2lya2djcXJyaXltd3dvaWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk3MzAzODksImV4cCI6MjA1NTMwNjM4OX0.Ww69yn3DZ03G2xmHOQR_FgtQLo8ZgLhpbkjCpXdmw4s';
+require('dotenv').config();
+const supaUrl = process.env.SUPABASE_URL;
+const supaAnonKey = process.env.SUPABASE_KEY;
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
 /* =========== ERAS API =========== */
+// Get all eras
 app.get('/api/eras', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -39,6 +37,7 @@ app.get('/api/eras', async (req, res) => {
 });
 
 /* =========== GALLERIES API =========== */
+// Get all galleries
 app.get('/api/galleries', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -62,6 +61,7 @@ app.get('/api/galleries', async (req, res) => {
     }
 });
 
+// Get a gallery by ID
 app.get('/api/galleries/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -86,6 +86,7 @@ app.get('/api/galleries/:id', async (req, res) => {
     }
 });
 
+// Get galleries from a specific country
 app.get('/api/galleries/country/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -111,6 +112,7 @@ app.get('/api/galleries/country/:substring', async (req, res) => {
 });
 
 /* =========== ARTISTS API =========== */
+// Get all artists
 app.get('/api/artists', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -134,6 +136,7 @@ app.get('/api/artists', async (req, res) => {
     }
 });
 
+// Get an artist by ID
 app.get('/api/artists/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -158,6 +161,7 @@ app.get('/api/artists/:id', async (req, res) => {
     }
 });
 
+// Search artists by last name
 app.get('/api/artists/search/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -182,6 +186,7 @@ app.get('/api/artists/search/:substring', async (req, res) => {
     }
 });
 
+// Get artists by nationality
 app.get('/api/artists/country/:substring', async (req, res) => {
     try {    
 
@@ -195,7 +200,7 @@ app.get('/api/artists/country/:substring', async (req, res) => {
         }
 
         if (!data || data.length === 0) {
-            return res.status(404).json({error: `No artists found with from countries starting with ${req.params.substring}.`})
+            return res.status(404).json({error: `No artists found from countries starting with ${req.params.substring}.`})
         }
 
         res.send(data);
@@ -208,7 +213,6 @@ app.get('/api/artists/country/:substring', async (req, res) => {
 });
 
 /* =========== PAINTINGS API =========== */
-
 /* Contains all painting fields not including foreign keys */
 const paintingFields = `paintingId,          
                         imageFileName,
@@ -230,6 +234,7 @@ const paintingFields = `paintingId,
                         wikiLink,
                         jsonAnnotations`;
 
+// Get all paintings
 app.get('/api/paintings', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -254,6 +259,7 @@ app.get('/api/paintings', async (req, res) => {
     }
 });
 
+// Get paintings sorted by a field (title or year)
 app.get('/api/paintings/sort/:field', async (req, res) => { 
     try {    
         let { field} = req.params;
@@ -276,7 +282,7 @@ app.get('/api/paintings/sort/:field', async (req, res) => {
         }
 
         if (!data || data.length === 0) {
-            return res.status(404).json({error: `Invalid sort field. Use either 'title' or 'yearOfWork'.`})
+            return res.status(404).json({error: `No paintings found.`})
         }
 
         res.send(data);
@@ -288,6 +294,7 @@ app.get('/api/paintings/sort/:field', async (req, res) => {
     }
 }); 
 
+// Get a painting by ID
 app.get('/api/paintings/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -312,6 +319,7 @@ app.get('/api/paintings/:id', async (req, res) => {
     }
 });
 
+// Search paintings by title 
 app.get('/api/paintings/search/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -337,11 +345,12 @@ app.get('/api/paintings/search/:substring', async (req, res) => {
     }
 });
 
+// Get paintings within a year range
 app.get('/api/paintings/years/:start/:end', async (req, res) => {
     try {    
 
         if (req.params.start > req.params.end) {
-            return res.status(500).json( {error: "Invalid Range: The start year must be before or equal to the end year."});
+            return res.status(400).json( {error: "Invalid Range: The start year must be before or equal to the end year."});
         }
 
         const {data, error} = await supabase
@@ -367,6 +376,7 @@ app.get('/api/paintings/years/:start/:end', async (req, res) => {
     }
 });
 
+// Get paintings from a specific gallery
 app.get('/api/paintings/galleries/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -392,6 +402,7 @@ app.get('/api/paintings/galleries/:id', async (req, res) => {
     }
 });
 
+// Get paintings by a specific artist
 app.get('/api/paintings/artist/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -416,6 +427,7 @@ app.get('/api/paintings/artist/:id', async (req, res) => {
     }
 });
 
+// Get paintings by artists from a specific country
 app.get('/api/paintings/artist/country/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -445,6 +457,7 @@ app.get('/api/paintings/artist/country/:substring', async (req, res) => {
 });
 
 /* =========== GENRES API =========== */
+// Get all genres
 app.get('/api/genres', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -471,6 +484,7 @@ app.get('/api/genres', async (req, res) => {
     }   
 });
 
+// Get a genre by ID
 app.get('/api/genres/:id', async (req, res) => {
     try {    
 
@@ -499,6 +513,7 @@ app.get('/api/genres/:id', async (req, res) => {
     }
 });
 
+// Get all genres for a painting
 app.get('/api/genres/painting/:id', async (req, res) => { 
     try {    
         const {data, error} = await supabase
@@ -526,11 +541,13 @@ app.get('/api/genres/painting/:id', async (req, res) => {
     }
 });
 
+// Get paintings that belong to a specific genre
 app.get('/api/paintings/genre/:id', async (req, res) => { 
     try {    
         const {data, error} = await supabase
             .from('paintinggenres')
             .select(`
+                genreId,
                 paintings (paintingId, title, yearOfWork)
             `)
             .eq("genreId", req.params.id)
@@ -553,7 +570,8 @@ app.get('/api/paintings/genre/:id', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/era/:id', async (req, res) => { /* This works now, but talk to Randy about needing to select eraId for it to work?? */
+// Get paintings from a specific era
+app.get('/api/paintings/era/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintinggenres')
@@ -582,7 +600,8 @@ app.get('/api/paintings/era/:id', async (req, res) => { /* This works now, but t
 });
 
 /* =========== COUNTS API =========== */
-app.get('/api/counts/genres', async (req, res) => { /* also not working? */
+// Get the number of paintings per genre
+app.get('/api/counts/genres', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('genres')
@@ -590,9 +609,12 @@ app.get('/api/counts/genres', async (req, res) => { /* also not working? */
                 genreName, paintinggenres(genreId)
             `)
 
-
         if (error) {
             return res.status(500).json({ error: error.message });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({ error: `No genres found with paintings.`})
         }
 
         const genreCounts = data.map(genre => ({
@@ -601,10 +623,6 @@ app.get('/api/counts/genres', async (req, res) => { /* also not working? */
         }));
 
         genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
-
-        if (!genreCounts || genreCounts.length === 0) {
-            return res.status(404).json({error: `No genres found with paintings.`})
-        }
 
         res.json(genreCounts);
     }
@@ -615,7 +633,8 @@ app.get('/api/counts/genres', async (req, res) => { /* also not working? */
     }
 });
 
-app.get('/api/counts/artists', async (req, res) => { /* also not working? */
+// Get the number of paintings per artist
+app.get('/api/counts/artists', async (req, res) => { 
     try {    
         const {data, error} = await supabase
             .from('artists')
@@ -627,14 +646,14 @@ app.get('/api/counts/artists', async (req, res) => { /* also not working? */
             return res.status(500).json({ error: error.message });
         }
 
+        if (!data || data.length === 0) {
+            return res.status(404).json({error: `No artists found with paintings.`})
+        }
+
         const artistCounts = data.map(artist => ({
             artistName: `${artist.firstName} ${artist.lastName}` ,
             paintingCount: artist.paintings.length
         }));
-
-        if (!artistCounts || artistCounts.length === 0) {
-            return res.status(404).json({error: `No artists found with paintings.`})
-        }
 
         artistCounts.sort((a,b) => b.paintingCount - a.paintingCount);
         res.json(artistCounts);
@@ -646,7 +665,8 @@ app.get('/api/counts/artists', async (req, res) => { /* also not working? */
     }
 });
 
-app.get('/api/counts/topgenres/:threshold', async (req, res) => { /* also not working? */
+// Get genres with more paintings than a given number
+app.get('/api/counts/topgenres/:threshold', async (req, res) => { 
     try {    
         const {data, error} = await supabase
             .from('genres')
@@ -679,9 +699,10 @@ app.get('/api/counts/topgenres/:threshold', async (req, res) => { /* also not wo
     }
 });
 
-let hostURL = "http://localhost:8070"
-app.listen(8070, () => {
-    console.log('listening on port 8070');
+let port = 8070;
+let hostURL = `http://localhost:${port}`
+app.listen(port, () => {
+    console.log(`listening on port ${port}`);
     console.log(hostURL + '/api/eras');
     console.log(hostURL + '/api/galleries');
     console.log(hostURL + '/api/galleries/30');
