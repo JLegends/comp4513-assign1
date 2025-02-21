@@ -11,6 +11,26 @@ const supaUrl = process.env.SUPABASE_URL;
 const supaAnonKey = process.env.SUPABASE_KEY;
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
+/* =========== ROOT ROUTE API INFO =========== */
+// This is a simple guide outlining the different possible routes when just /api is called
+app.get('/api', (req, res) => {
+    res.json({
+        message: "Welcome to the COMP4513 Assignemnt 1 Art Database API",
+        endpoints: {
+            eras: "/api/eras",
+            galleries: "/api/galleries",
+            artists: "/api/artists",
+            paintings: "/api/paintings",
+            genres: "/api/genres",
+            counts: {
+                genres: "/api/counts/genres",
+                artists: "/api/counts/artists",
+                topGenres: "/api/counts/topgenres/:threshold"
+            }
+        }
+    });
+});
+
 /* =========== ERAS API =========== */
 // Get all eras
 app.get('/api/eras', async (req, res) => {
@@ -700,39 +720,6 @@ app.get('/api/counts/topgenres/:threshold', async (req, res) => {
 });
 
 let port = 8070;
-let hostURL = `http://localhost:${port}`
 app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-    console.log(hostURL + '/api/eras');
-    console.log(hostURL + '/api/galleries');
-    console.log(hostURL + '/api/galleries/30');
-    console.log(hostURL + '/api/galleries/Calgary');
-    console.log(hostURL + '/api/galleries/country/fra');
-    console.log(hostURL + '/api/artists');
-    console.log(hostURL + '/api/artists/12');
-    console.log(hostURL + '/api/artists/1223423');
-    console.log(hostURL + '/api/artists/search/ma');
-    console.log(hostURL + '/api/artists/search/mA');
-    console.log(hostURL + '/api/artists/country/fra');
-    console.log(hostURL + '/api/paintings');
-    console.log(hostURL + '/api/paintings/sort/year');
-    console.log(hostURL + '/api/paintings/63');
-    console.log(hostURL + '/api/paintings/search/port');
-    console.log(hostURL + '/api/paintings/search/pORt');
-    console.log(hostURL + '/api/paintings/search/connolly');
-    console.log(hostURL + '/api/paintings/years/1800/1850');
-    console.log(hostURL + '/api/paintings/galleries/5');
-    console.log(hostURL + '/api/paintings/artist/16');
-    console.log(hostURL + '/api/paintings/artist/666');
-    console.log(hostURL + '/api/paintings/artist/country/ital');
-    console.log(hostURL + '/api/genres');
-    console.log(hostURL + '/api/genres/76');
-    console.log(hostURL + '/api/genres/painting/408');
-    console.log(hostURL + '/api/genres/painting/jsdfhg');
-    console.log(hostURL + '/api/paintings/genre/78');
-    console.log(hostURL + '/api/paintings/era/2');
-    console.log(hostURL + '/api/counts/genres');
-    console.log(hostURL + '/api/counts/artists');
-    console.log(hostURL + '/api/counts/topgenres/20');
-    console.log(hostURL + '/api/counts/topgenres/2034958)');
+    console.log(`Server is running at https://jvoirkgcqrriymwwoigq.supabase.co`);
 });
