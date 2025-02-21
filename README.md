@@ -2,7 +2,7 @@
 
 ## Overview
 - This repository holds the JavaScript code for Assignment #1 of COMP 4513 at Mount Royal University. The goal of this project was to 
-create a series of web accessible APIs using Node, Express and SQLite to interact with paintings data.
+create a series of web accessible APIs using Node, Express and SQLite to interact with a database containing artists, paintings and galleries data.
 
 ## Built Using
 ![Node.js](https://img.shields.io/badge/Node.js-22.12.0-red)
@@ -11,8 +11,7 @@ create a series of web accessible APIs using Node, Express and SQLite to interac
 ![Supabase-js](https://img.shields.io/badge/Supabase.js-2.48.1-green)
 ![Render](https://img.shields.io/badge/Deployed%20on-Render.com-blue)
 
-# API Endpoints
-
+## API Endpoints
 | API Endpoint | Description |
 |-------------|-------------|
 | `/api/eras` | Returns all the eras |
@@ -66,12 +65,3 @@ create a series of web accessible APIs using Node, Express and SQLite to interac
 - [/api/counts/genres](https://comp4513-assign1.onrender.com/api/counts/genres)
 - [/api/counts/artists](https://comp4513-assign1.onrender.com/api/counts/artists)
 - [/api/counts/topgenres/:threshold](https://comp4513-assign1.onrender.com/api/counts/topgenres/:threshold)
-
-
-
-
-### Data
-- The data directory holds all of the JSON data to be parse and to be accessed via API calls to the server.
-### Code
-- server.js holds the server code which creates the API functionality and runs the express node server
-- module.js parses JSON data and exports it for the use of server.js 
