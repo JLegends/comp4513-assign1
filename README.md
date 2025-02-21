@@ -4,14 +4,10 @@
 - This repository holds the JavaScript code for Assignment #1 of COMP 4513 at Mount Royal University. The goal of this project was to 
 create a series of web accessible APIs using Node, Express and SQLite to interact with paintings data.
 
-## Features
-- Converts CSV into a relational database
-- Converts relational database data into API accessible data
-- Provides endpoints to retrieve data on circuits, constructors, drivers, races, results
-- Render.com is used to run the API server
-
-## Technology Used
-- JavaScript, Node, Express, Git, Render
+## Built Using
+![Node.js](https://img.shields.io/badge/Node.js-22.12.0-green)
+![Express](https://img.shields.io/badge/Express-4.21.1-blue)
+![Deployed on](https://img.shields.io/badge/Deployed%20on-Render.com-orange)
 
 # API Endpoints
 
@@ -79,7 +75,6 @@ create a series of web accessible APIs using Node, Express and SQLite to interac
 
 
 
-## Main Project Files
 ### Data
 - The data directory holds all of the JSON data to be parse and to be accessed via API calls to the server.
 ### Code

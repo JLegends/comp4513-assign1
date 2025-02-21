@@ -3,8 +3,9 @@
 Complete the readme.md, with routes
 Set up modules for private route access
 review each query for correct data aggregation
-create & run server in render.com
-add start and end date error checking with custom message
+write a note for the basic web service route (just the url.com/apis)
+ 
+all eras apis need to contain all data from eras table
 
 take out all foreign keys from the painting routes
 
@@ -12,8 +13,6 @@ take out all foreign keys from the painting routes
 ASK HIM 
 
 ASK RANDY ABOUT THE ERASID THING FOR THE 4TH LAST ROUTE*****
-
-
 
 */
 
@@ -25,32 +24,12 @@ const supaUrl = 'https://jvoirkgcqrriymwwoigq.supabase.co';
 const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2b2lya2djcXJyaXltd3dvaWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk3MzAzODksImV4cCI6MjA1NTMwNjM4OX0.Ww69yn3DZ03G2xmHOQR_FgtQLo8ZgLhpbkjCpXdmw4s';
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
-const paintingFields = `paintingId,
-                        imageFileName,
-                        title,
-                        shapeId,
-                        museumLink,
-                        accessionNumber,
-                        copyrightText,
-                        description,
-                        excerpt,
-                        yearOfWork,
-                        width,
-                        height,
-                        medium,
-                        cost,
-                        MSRP,
-                        googleLink,
-                        googleDescription,
-                        wikiLink,
-                        jsonAnnotations`;
-
 /* =========== ERAS API =========== */
 app.get('/api/eras', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('eras')
-            .select();
+            .select(`*`);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -70,7 +49,7 @@ app.get('/api/galleries', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('galleries')
-            .select();
+            .select(`*`);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -85,12 +64,12 @@ app.get('/api/galleries', async (req, res) => {
     }
 });
 
-app.get('/api/galleries/:ref', async (req, res) => {
+app.get('/api/galleries/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('galleries')
-            .select()
-            .eq('galleryId', req.params.ref )
+            .select(`*`)
+            .eq('galleryId', req.params.id )
         
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -109,7 +88,7 @@ app.get('/api/galleries/country/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('galleries')
-            .select()
+            .select(`*`)
             .ilike('galleryCountry', `${req.params.substring}%`);
 
         if (error) {
@@ -130,7 +109,7 @@ app.get('/api/artists', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('artists')
-            .select();
+            .select(`*`);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -145,12 +124,12 @@ app.get('/api/artists', async (req, res) => {
     }
 });
 
-app.get('/api/artists/:ref', async (req, res) => {
+app.get('/api/artists/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('artists')
-            .select()
-            .eq('artistId', req.params.ref);
+            .select(`*`)
+            .eq('artistId', req.params.id);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -207,6 +186,28 @@ app.get('/api/artists/country/:substring', async (req, res) => {
 });
 
 /* =========== PAINTINGS API =========== */
+
+/* CONTAINS ALL FIELDS NOT INCLUDING THE FOREIGN KEYS */
+const paintingFields = `paintingId,          
+                        imageFileName,
+                        title,
+                        shapeId,
+                        museumLink,
+                        accessionNumber,
+                        copyrightText,
+                        description,
+                        excerpt,
+                        yearOfWork,
+                        width,
+                        height,
+                        medium,
+                        cost,
+                        MSRP,
+                        googleLink,
+                        googleDescription,
+                        wikiLink,
+                        jsonAnnotations`;
+
 app.get('/api/paintings', async (req, res) => {
     try {    
         const {data, error} = await supabase
@@ -227,22 +228,22 @@ app.get('/api/paintings', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/sort/:sortField', async (req, res) => { 
+app.get('/api/paintings/sort/:field', async (req, res) => { 
     try {    
-        let { sortField} = req.params;
+        let { field} = req.params;
 
-        if (sortField === 'year') {
-            sortField = 'yearOfWork';
+        if (field === 'year') {
+            field = 'yearOfWork';
         }
 
-        if (!['title', 'yearOfWork'].includes(sortField)) {
+        if (!['title', 'yearOfWork'].includes(field)) {
             return res.status(400).json({ error: "Invalid sort field. Use 'title' or 'yearOfWork'." });
         }
 
         const {data, error} = await supabase
                 .from('paintings')
                 .select(paintingFields)
-                .order(sortField, {ascending: true})
+                .order(field, {ascending: true})
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -257,12 +258,12 @@ app.get('/api/paintings/sort/:sortField', async (req, res) => {
     }
 }); 
 
-app.get('/api/paintings/:ref', async (req, res) => {
+app.get('/api/paintings/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
             .select(paintingFields)
-            .eq('paintingId', req.params.ref);
+            .eq('paintingId', req.params.id);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -322,12 +323,12 @@ app.get('/api/paintings/years/:start/:end', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/galleries/:ref', async (req, res) => {
+app.get('/api/paintings/galleries/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
             .select(paintingFields)
-            .eq("galleryId", req.params.ref)
+            .eq("galleryId", req.params.id)
             .order("title", {ascending: true});
 
 
@@ -343,12 +344,12 @@ app.get('/api/paintings/galleries/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/artist/:ref', async (req, res) => {
+app.get('/api/paintings/artist/:id', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
-            .select(`paintingFields`)
-            .eq("artistId", req.params.ref)
+            .select(paintingFields)
+            .eq("artistId", req.params.id)
             .order("title", {ascending: true});
 
         if (error) {
@@ -363,7 +364,7 @@ app.get('/api/paintings/artist/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/artist/country/:ref', async (req, res) => {
+app.get('/api/paintings/artist/country/:substring', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('paintings')
@@ -371,7 +372,7 @@ app.get('/api/paintings/artist/country/:ref', async (req, res) => {
                 ${paintingFields},
                 artists!inner(artistId, nationality)
             `)
-            .ilike("artists.nationality", `${req.params.ref}%`)
+            .ilike("artists.nationality", `${req.params.substring}%`)
             .order("title", {ascending: true});
 
         if (error) {
@@ -407,13 +408,13 @@ app.get('/api/genres', async (req, res) => {
     }   
 });
 
-app.get('/api/genres/:ref', async (req, res) => {
+app.get('/api/genres/:id', async (req, res) => {
     try {    
 
         const {data, error} = await supabase
             .from('genres')
             .select()
-            .eq("genreId", req.params.ref);
+            .eq("genreId", req.params.id);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -428,14 +429,14 @@ app.get('/api/genres/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/genres/painting/:ref', async (req, res) => { 
+app.get('/api/genres/painting/:id', async (req, res) => { 
     try {    
         const {data, error} = await supabase
             .from('paintinggenres')
             .select(`
                 genres(genreName)
             `)
-            .eq("paintingId", req.params.ref)
+            .eq("paintingId", req.params.id)
             .order("genres(genreName)", {ascending: true});
 
         if (error) {
@@ -451,14 +452,14 @@ app.get('/api/genres/painting/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/genre/:ref', async (req, res) => { 
+app.get('/api/paintings/genre/:id', async (req, res) => { 
     try {    
         const {data, error} = await supabase
             .from('paintinggenres')
             .select(`
                 paintings (paintingId, title, yearOfWork)
             `)
-            .eq("genreId", req.params.ref)
+            .eq("genreId", req.params.id)
             .order("paintings(yearOfWork)", {ascending: true});
 
         if (error) {
@@ -474,14 +475,14 @@ app.get('/api/paintings/genre/:ref', async (req, res) => {
     }
 });
 
-app.get('/api/paintings/era/:ref', async (req, res) => { /* This works now, but talk to Randy about needing to select eraId for it to work?? */
+app.get('/api/paintings/era/:id', async (req, res) => { /* This works now, but talk to Randy about needing to select eraId for it to work?? */
     try {    
         const {data, error} = await supabase
             .from('paintinggenres')
             .select(`
                 paintings(paintingId, title, yearOfWork), genres!inner (eraId)
             `)
-            .eq("genres.eraId", req.params.ref)
+            .eq("genres.eraId", req.params.id)
             .order("paintings(yearOfWork)", { ascending: true});
 
 
@@ -554,7 +555,7 @@ app.get('/api/counts/artists', async (req, res) => { /* also not working? */
     }
 });
 
-app.get('/api/counts/topgenres/:ref', async (req, res) => { /* also not working? */
+app.get('/api/counts/topgenres/:threshold', async (req, res) => { /* also not working? */
     try {    
         const {data, error} = await supabase
             .from('genres')
@@ -572,7 +573,7 @@ app.get('/api/counts/topgenres/:ref', async (req, res) => { /* also not working?
         }));
 
         genreCounts.sort((a,b) => a.paintingCount - b.paintingCount);
-        const topGenres = genreCounts.filter(a => a.paintingCount > req.params.ref); /* filters only for genres with painting count greater than ref number */
+        const topGenres = genreCounts.filter(a => a.paintingCount > req.params.threshold); /* filters only for genres with painting count greater than threshold */
 
         res.json(topGenres);
     }
