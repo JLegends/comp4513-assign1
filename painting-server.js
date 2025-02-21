@@ -9,7 +9,6 @@ all eras apis need to contain all data from eras table
 
 take out all foreign keys from the painting routes
 
-
 ASK HIM 
 
 ASK RANDY ABOUT THE ERASID THING FOR THE 4TH LAST ROUTE*****
@@ -393,7 +392,10 @@ app.get('/api/genres', async (req, res) => {
     try {    
         const {data, error} = await supabase
             .from('genres')
-            .select();
+            .select(`
+                *,
+                eras(*)
+            `);
 
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -413,7 +415,10 @@ app.get('/api/genres/:id', async (req, res) => {
 
         const {data, error} = await supabase
             .from('genres')
-            .select()
+            .select(`
+                *,
+                eras(*)
+            `)
             .eq("genreId", req.params.id);
 
         if (error) {
@@ -434,7 +439,7 @@ app.get('/api/genres/painting/:id', async (req, res) => {
         const {data, error} = await supabase
             .from('paintinggenres')
             .select(`
-                genres(genreName)
+                genres(*, eras(*))
             `)
             .eq("paintingId", req.params.id)
             .order("genres(genreName)", {ascending: true});

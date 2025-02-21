@@ -5,9 +5,11 @@
 create a series of web accessible APIs using Node, Express and SQLite to interact with paintings data.
 
 ## Built Using
-![Node.js](https://img.shields.io/badge/Node.js-22.12.0-green)
-![Express](https://img.shields.io/badge/Express-4.21.1-blue)
-![Deployed on](https://img.shields.io/badge/Deployed%20on-Render.com-orange)
+![Node.js](https://img.shields.io/badge/Node.js-22.12.0-red)
+![Express](https://img.shields.io/badge/Express-4.21.2-orange)
+![SQLite3](https://img.shields.io/badge/SQLite3-5.1.7-yellow)
+![Supabase-js](https://img.shields.io/badge/Supabase.js-2.48.1-green)
+![Render](https://img.shields.io/badge/Deployed%20on-Render.com-blue)
 
 # API Endpoints
 
