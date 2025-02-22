@@ -16,6 +16,7 @@ const supabase = supa.createClient(supaUrl, supaAnonKey);
 app.get('/api', (req, res) => {
     res.json({
         message: "Welcome to the COMP4513 Assignemnt 1 Art Database API",
+        description: "Below are a few sample API routes examples, more can be found in the readme for this project",
         endpoints: {
             eras: "/api/eras",
             galleries: "/api/galleries",
@@ -721,5 +722,5 @@ app.get('/api/counts/topgenres/:threshold', async (req, res) => {
 
 let port = 8070;
 app.listen(port, () => {
-    console.log(`Server is running at https://jvoirkgcqrriymwwoigq.supabase.co`);
+    console.log(`API Server is running at https://comp4513-assign1.onrender.com/api`);
 });
