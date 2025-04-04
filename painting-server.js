@@ -13,7 +13,11 @@ const supaAnonKey = process.env.SUPABASE_KEY;
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
 
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly allow methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow common headers
+}));
 
 /* =========== ROOT ROUTE API INFO =========== */
 // This is a simple guide outlining the different possible routes when just /api is called
