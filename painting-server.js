@@ -5,11 +5,15 @@
 
 const express = require('express');
 const supa = require('@supabase/supabase-js');
+const cors = require('cors');
 const app = express();
 require('dotenv').config();
 const supaUrl = process.env.SUPABASE_URL;
 const supaAnonKey = process.env.SUPABASE_KEY;
 const supabase = supa.createClient(supaUrl, supaAnonKey);
+
+
+app.use(cors({}));
 
 /* =========== ROOT ROUTE API INFO =========== */
 // This is a simple guide outlining the different possible routes when just /api is called
